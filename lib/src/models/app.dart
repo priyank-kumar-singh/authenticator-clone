@@ -17,7 +17,7 @@ class Applications {
     required this.issuer,
     this.algorithm = 'SHA1',
     this.digits = '6',
-    this.counter = '',
+    this.counter = '0',
     this.period = '30',
   });
 
@@ -53,5 +53,10 @@ class Applications {
       counter: e['counter'] as String,
       period: e['period'] as String,
     );
+  }
+
+  @override
+  String toString() {
+    return "{uid: $uid, user: $user, type: $type, secret: $secret, issuer: $issuer, algorithm: $algorithm, digits: $digits, counter: $counter, period: $period}";
   }
 }

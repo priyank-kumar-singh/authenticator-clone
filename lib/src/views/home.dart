@@ -45,13 +45,14 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this,
       duration: const Duration(seconds: 30),
       upperBound: 30.0,
-      lowerBound: 0.0,
+      lowerBound: 1.0,
       value: (60.0 - DateTime.now().second) % 30,
-    )..animateTo(0.0)
-    ..addListener(() {
-      if (_controller.value == 0.0) {
-        _controller.value = 60.0;
-        _controller.animateTo(0.0, duration: const Duration(seconds: 30));
+    )..animateTo(1.0)
+    ..addListener(() async {
+      if (_controller.value == 1.0) {
+        _controller.value = 30.0;
+        _controller.animateTo(1.0, duration: const Duration(seconds: 30));
+        setState(() {});
       }
     });
     progressDialogRemove = ProgressDialog(
@@ -153,7 +154,6 @@ class _HomeScreenState extends State<HomeScreen>
           onLongPress: () async {
             await showDialog(
               context: context,
-              barrierDismissible: false,
               builder: (context) {
                 return actionsMenu(index);
               },
