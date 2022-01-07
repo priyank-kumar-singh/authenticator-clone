@@ -18,11 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late ProgressDialog progressDialogRemove;
-  // late Timer timer;
-  late int remain_secs;
-
   late AnimationController _controller;
-  late Animation _animation;
 
   bool isError = false, isloading = true;
   List<Applications> data = [];
@@ -45,9 +41,6 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     getData();
-    // timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-    //   setState(() {});
-    // });
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 30),
@@ -61,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen>
         _controller.animateTo(0.0, duration: const Duration(seconds: 30));
       }
     });
-    _animation = Tween(begin: 30.0, end: 0.0).animate(_controller);
     progressDialogRemove = ProgressDialog(
       context,
       isDismissible: false,
@@ -80,7 +72,6 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
     );
-    remain_secs = 60 - DateTime.now().second;
   }
 
   @override
@@ -132,7 +123,6 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget applicationList() {
-    // var time = ((remain_secs - timer.tick) % 30);
     return ListView.separated(
       itemCount: data.length,
       separatorBuilder: (_, __) => const Divider(
@@ -140,7 +130,6 @@ class _HomeScreenState extends State<HomeScreen>
         endIndent: 16.0,
         thickness: 1.2,
       ),
-
       itemBuilder: (_, index) {
         return ListTile(
           minVerticalPadding: 12.0,
@@ -150,14 +139,13 @@ class _HomeScreenState extends State<HomeScreen>
             animation: _controller,
             builder: (context, child) {
               return CircularPercentIndicator(
-                animation: true,
-                animationDuration: 30000,
-                restartAnimation: true,
                 circularStrokeCap: CircularStrokeCap.round,
                 lineWidth: 4.0,
                 radius: 40.0,
-                percent: 1.0,
+                reverse: true,
+                animateFromLastPercent: true,
                 progressColor: Colors.blue,
+                percent: _controller.value / 3 * 0.1,
                 center: Text('${_controller.value.floor()}'),
               );
             },
