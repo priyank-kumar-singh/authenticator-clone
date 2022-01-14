@@ -12,9 +12,9 @@ class NewMFAAppManually extends StatefulWidget {
 class _NewMFAAppManuallyState extends State<NewMFAAppManually> {
   final _formKey = GlobalKey<FormState>();
 
-  final userId = TextEditingController(text: 'john@example.com');
-  final secret = TextEditingController(text: 'HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ');
-  final issuer = TextEditingController(text: 'Acme Co');
+  final userId = TextEditingController();
+  final secret = TextEditingController();
+  final issuer = TextEditingController();
   final counter = TextEditingController();
   String? type, algorithm, period, digits;
 
