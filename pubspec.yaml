@@ -35,6 +35,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   flutter_barcode_scanner: ^2.0.0
+  syncfusion_flutter_barcodes: ^19.4.42
   sqflite: ^2.0.1
   google_fonts: ^2.2.0
   base32: 2.1.1
@@ -66,7 +67,6 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/
     - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see

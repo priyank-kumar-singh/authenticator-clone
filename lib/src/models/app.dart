@@ -1,48 +1,48 @@
-class Applications {
+// ignore: camel_case_types
+class MFA_Apps {
   final int? uid;
-  final String? type;
-  final String? user;
-  final String? secret;
-  final String? issuer;
+  final String type;
+  final String user;
+  final String secret;
+  final String issuer;
   final String algorithm;
   final String digits;
   final String counter;
   final String period;
 
-  Applications({
+  static const String dType = 'totp';
+  static const String dAlgorithm = 'sha1';
+  static const String dDigits = '6';
+  static const String dCounter = '0';
+  static const String dPeriod = '30';
+
+  MFA_Apps({
     this.uid,
     required this.type,
     required this.user,
     required this.secret,
     required this.issuer,
-    this.algorithm = 'SHA1',
-    this.digits = '6',
-    this.counter = '0',
-    this.period = '30',
+    required this.algorithm,
+    required this.digits,
+    required this.counter,
+    required this.period,
   });
-
-  bool nullCheck() {
-    if (user == null || type == null || secret == null || issuer == null) {
-      return true;
-    }
-    return false;
-  }
 
   Map<String, Object> toMap() {
     return {
-      "user": "$user",
-      "type": "$type",
-      "secret": "$secret",
-      "issuer": "$issuer",
+      "user"  : user,
+      "type"  : type,
+      "secret": secret,
+      "issuer": issuer,
       "algorithm": algorithm,
-      "digits": digits,
-      "counter": counter,
-      "period": period,
+      "digits"  : digits,
+      "counter" : counter,
+      "period"  : period,
     };
   }
 
-  static Applications fromMap(Map e) {
-    return Applications(
+  static MFA_Apps fromMap(Map e) {
+    return MFA_Apps(
       uid: e['uid'] as int,
       user: e['user'] as String,
       type: e['type'] as String,

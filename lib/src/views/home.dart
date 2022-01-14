@@ -4,10 +4,6 @@ import 'package:authenticator/application.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-import '../services/otp.dart';
-import '../widgets/dialog.dart';
-import '../widgets/progress_dialog.dart';
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -17,11 +13,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  late ProgressDialog progressDialogRemove;
-  late AnimationController _controller;
+  late final ProgressDialog progressDialogRemove;
+  late final ProgressDialog progressDialogImport;
+  late final AnimationController _controller;
 
   bool isError = false, isloading = true;
-  List<Applications> data = [];
+  List<MFA_Apps> data = [];
 
   Future<void> getData() async {
     try {
@@ -30,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen>
         isloading = true;
       });
       data = await sqlDatabase.getAll();
+      data.sort((a, b) => a.issuer.compareTo(b.issuer));
     } catch (e) {
       setState(() => isError = true);
     } finally {
@@ -73,6 +71,24 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
     );
+    progressDialogImport = ProgressDialog(
+      context,
+      isDismissible: false,
+      type: ProgressDialogType.normal,
+      customBody: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 24.0,
+        ),
+        child: Row(
+          children: const [
+            CircularProgressIndicator(),
+            SizedBox(width: 16.0),
+            Text('Importing...'),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -86,12 +102,58 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Authenticator'),
+        actions: [
+          PopupMenuButton(
+            onSelected: (value) async {
+              if (value == 'add') {
+                await Navigator.of(context).pushNamed(Routes.add);
+                data.clear();
+                getData();
+              } else if (value == 'import') {
+                await progressDialogImport.show();
+                var x = await Scanner.importApps();
+                await progressDialogImport.hide();
+                if (x) {
+                  showDialog(context: context, builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Import Successful'),
+                    content: const Text('Your applications have been imported successfully'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('Continue'),
+                      ),
+                    ],
+                  );
+                });
+                }
+                data.clear();
+                getData();
+              } else if (value == 'export') {
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+                  return ExportScreen(data: data);
+                }));
+              } else {
+                Navigator.of(context).pushNamed(Routes.settings);
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                const PopupMenuItem(child: Text('Add Manually'), value: 'add'),
+                const PopupMenuItem(child: Text('Import Data'), value: 'import'),
+                const PopupMenuItem(child: Text('Export Data'), value: 'export'),
+                const PopupMenuItem(child: Text('Settings'), value: 'settings'),
+              ];
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
+        tooltip: 'Add MFA Application',
         onPressed: () async {
           try {
-            await addNewApplication();
+            await Scanner.addApplication();
             data.clear();
             getData();
           } catch (e) {
@@ -132,6 +194,7 @@ class _HomeScreenState extends State<HomeScreen>
         thickness: 1.2,
       ),
       itemBuilder: (_, index) {
+        int periodFactor = data[index].period == '30' ? 1 : 2;
         return ListTile(
           minVerticalPadding: 12.0,
           title: Text('${data[index].issuer} (${data[index].user})'),
@@ -146,8 +209,8 @@ class _HomeScreenState extends State<HomeScreen>
                 reverse: true,
                 animateFromLastPercent: true,
                 progressColor: Colors.blue,
-                percent: _controller.value / 3 * 0.1,
-                center: Text('${_controller.value.floor()}'),
+                percent: _controller.value / (3 * periodFactor) * 0.1,
+                center: Text('${(_controller.value * periodFactor).floor()}'),
               );
             },
           ),
