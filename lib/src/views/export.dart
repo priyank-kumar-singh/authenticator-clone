@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:authenticator/application.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_barcodes/barcodes.dart';
@@ -27,7 +29,7 @@ class ExportScreen extends StatelessWidget {
                 maxWidth: 250,
                 maxHeight: 250,
               ),
-              child: SfBarcodeGenerator(value: data.toString(), symbology: QRCode()),
+              child: SfBarcodeGenerator(value: jsonEncode(data), symbology: QRCode()),
             ),
             Container(),
           ],

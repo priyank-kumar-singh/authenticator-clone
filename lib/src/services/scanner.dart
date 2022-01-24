@@ -49,18 +49,22 @@ class Scanner {
       return false;
     }
 
-    var data = jsonDecode(res) as List<Map<String, String>>;
-    for (var obj in data) {
-      var fData = createObject(obj);
-      var copyCheck = await sqlDatabase.getOne(fData);
-      if (copyCheck.isEmpty) {
-        await sqlDatabase.add(fData);
+    try {
+      var data = jsonDecode(res);
+      for (var obj in data) {
+        var fData = createObject(obj);
+        var copyCheck = await sqlDatabase.getOne(fData);
+        if (copyCheck.isEmpty) {
+          await sqlDatabase.add(fData);
+        }
       }
+      return true;
+    } catch (e) {
+      return false;
     }
-    return true;
   }
 
-  static MFA_Apps createObject(Map<String, String> data) {
+  static MFA_Apps createObject(data) {
     return MFA_Apps(
       user: data['user']!,
       type: data['type']!,

@@ -59,4 +59,18 @@ class MFA_Apps {
   String toString() {
     return "{uid: $uid, user: $user, type: $type, secret: $secret, issuer: $issuer, algorithm: $algorithm, digits: $digits, counter: $counter, period: $period}";
   }
+
+  Map<String, Object?> toJson() {
+    return {
+      'uid': uid,
+      'user': user,
+      'type': type,
+      'secret': secret,
+      'issuer': issuer,
+      'algorithm': algorithm,
+      'digits': digits,
+      'counter': counter,
+      'period': period,
+    };
+  }
 }
